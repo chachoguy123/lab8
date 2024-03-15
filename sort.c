@@ -31,7 +31,59 @@ size_t Size(void* ptr)
 // extraMemoryAllocated counts bytes of extra memory allocated
 void mergeSort(int pData[], int l, int r)
 {
+    if (l < r) {
+        //find the middle point to divide the array into two halves
+        int m = l + (r - l) / 2;
+
+        //call mergeSort for first half
+        mergeSort(pData, l, m);
+
+        //call mergeSort for second half
+        mergeSort(pData, m + 1, r);
+
+        //merge the two halves sorted in step 2 and 3
+        int i, j, k;
+        int n1 = m - l + 1;
+        int n2 = r - m;
+        int *L = (int *)Alloc(n1 * sizeof(int));
+        int *R = (int *)Alloc(n2 * sizeof(int));
+
+        for (i = 0; i < n1; i++)
+            L[i] = pData[l + i];
+        for (j = 0; j < n2; j++)
+            R[j] = pData[m + 1 + j];
+
+        i = 0;
+        j = 0;
+        k = l;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                pData[k] = L[i];
+                i++;
+            } else {
+                pData[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+
+        while (i < n1) {
+            pData[k] = L[i];
+            i++;
+            k++;
+        }
+
+        while (j < n2) {
+            pData[k] = R[j];
+            j++;
+            k++;
+        }
+
+        DeAlloc(L);
+        DeAlloc(R);
+    }
 }
+
 
 // parses input file to an integer array
 int parseData(char *inputFileName, int **ppData)
@@ -67,19 +119,20 @@ int parseData(char *inputFileName, int **ppData)
 // prints first and last 100 items in the data array
 void printArray(int pData[], int dataSz)
 {
-	int i, sz = dataSz - 100;
-	printf("\tData:\n\t");
-	for (i=0;i<100;++i)
-	{
-		printf("%d ",pData[i]);
-	}
-	printf("\n\t");
-	
-	for (i=sz;i<dataSz;++i)
-	{
-		printf("%d ",pData[i]);
-	}
-	printf("\n\n");
+    int i, sz = (dataSz > 100 ? dataSz - 100 : 0);
+    int firstHundred = (dataSz < 100 ? dataSz : 100);
+    printf("\tData:\n\t");
+    for (i=0;i<firstHundred;++i)
+    {
+        printf("%d ",pData[i]);
+    }
+    printf("\n\t");
+    
+    for (i=sz;i<dataSz;++i)
+    {
+        printf("%d ",pData[i]);
+    }
+    printf("\n\n");
 }
 
 int main(void)
